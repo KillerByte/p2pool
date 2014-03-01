@@ -10,10 +10,10 @@ from p2pool.util import math
 nets = dict(
     memorycoin=math.Object(
         PARENT=networks.nets['memorycoin'],
-        SHARE_PERIOD=30, # seconds
+        SHARE_PERIOD=15, # seconds
         CHAIN_LENGTH=60*60//10, # shares
-        REAL_CHAIN_LENGTH=24*60*60//10, # shares
-        TARGET_LOOKBEHIND=200, # shares
+        REAL_CHAIN_LENGTH=60*60//10, # shares
+        TARGET_LOOKBEHIND=100, # shares
         SPREAD=3, # blocks
         IDENTIFIER='394c395ff32cfba2'.decode('hex'),
         PREFIX='8f75adc343019bbd'.decode('hex'),
@@ -25,7 +25,7 @@ nets = dict(
         BOOTSTRAP_ADDRS='memorycoin.biz'.split(' '),
         ANNOUNCE_CHANNEL='#p2pool',
         VERSION_CHECK=lambda v: 50700 <= v < 60000 or 60010 <= v < 60100 or 60400 <= v,
-        VERSION_WARNING=lambda v: 'Upgrade Bitcoin to >=0.8.5!' if v < 80500 else None,
+        VERSION_WARNING=lambda v: 'Upgrade Memorycoin to >=0.8.5!' if v < 80500 else None,
     ),
 )
 for net_name, net in nets.iteritems():
