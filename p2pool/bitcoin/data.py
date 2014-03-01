@@ -126,6 +126,8 @@ block_header_type = pack.ComposedType([
     ('timestamp', pack.IntType(32)),
     ('bits', FloatingIntegerType()),
     ('nonce', pack.IntType(32)),
+    ('birthdayA', pack.IntType(32)),
+    ('birthdayB', pack.IntType(32))
 ])
 
 block_type = pack.ComposedType([
