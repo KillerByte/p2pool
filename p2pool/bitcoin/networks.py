@@ -33,8 +33,8 @@ nets = dict(
         BLOCK_EXPLORER_URL_PREFIX='http://mmcexplorer.info/?query=',
         ADDRESS_EXPLORER_URL_PREFIX='http://mmcexplorer.info/?query=',
         TX_EXPLORER_URL_PREFIX='http://mmcexplorer.info/?query=',
-        SANE_TARGET_RANGE=(0, 2**256//2**32 - 1),
-        DUMB_SCRYPT_DIFF=1,
+        SANE_TARGET_RANGE=(2**256//4096 - 1, 2**256//2 - 1),
+        DUMB_SCRYPT_DIFF=2**16,
         DUST_THRESHOLD=1e8,
     ),
 

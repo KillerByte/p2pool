@@ -62,6 +62,8 @@ class Share(object):
         ('timestamp', pack.IntType(32)),
         ('bits', bitcoin_data.FloatingIntegerType()),
         ('nonce', pack.IntType(32)),
+        ('birthdayA', pack.IntType(32)),
+        ('birthdayB', pack.IntType(32)),
     ])
     
     share_info_type = pack.ComposedType([
