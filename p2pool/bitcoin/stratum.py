@@ -55,7 +55,7 @@ class StratumRPCMiningProvider(object):
         ).addErrback(lambda err: None)
         self.handler_map[jobid] = x, got_response
     
-    def rpc_submit(self, worker_name, job_id, extranonce2, ntime, nonce):
+    def rpc_submit(self, worker_name, job_id, extranonce2, ntime, nonce, birthdayA, birthdayB):
         if job_id not in self.handler_map:
             print >>sys.stderr, '''Couldn't link returned work's job id with its handler. This should only happen if this process was recently restarted!'''
             return False
@@ -70,6 +70,8 @@ class StratumRPCMiningProvider(object):
             timestamp=pack.IntType(32).unpack(getwork._swap4(ntime.decode('hex'))),
             bits=x['bits'],
             nonce=pack.IntType(32).unpack(getwork._swap4(nonce.decode('hex'))),
+            birthdayA=pack.IntType(32).unpack(getwork._swap4(birthdayA.decode('hex'))),
+            birthdayB=pack.IntType(32).unpack(getwork._swap4(birthdayB.decode('hex'))),
         )
         return got_response(header, worker_name, coinb_nonce)
     
