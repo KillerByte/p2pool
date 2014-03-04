@@ -32,6 +32,8 @@ class StratumRPCMiningProvider(object):
         self.username = username
         
         reactor.callLater(0, self._send_work)
+        
+        return True # to confirm login (which we dont have, its just a yes *if its a real address (cough cough) :)
     
     def _send_work(self):
         try:
