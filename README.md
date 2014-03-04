@@ -1,3 +1,11 @@
+When Cloning:
+-------------------------
+Please make sure you use these commands when cloning directly:
+
+	git clone https://github.com/KillerByte/p2pool
+	git submodule sync
+	git submodule update --init
+
 Requirements:
 -------------------------
 Generic:
