@@ -43,7 +43,7 @@ class StratumRPCMiningProvider(object):
             self.transport.loseConnection()
             return
         jobid = str(random.randrange(2**128))
-        self.other.svc_mining.rpc_set_difficulty(x['share_target']).addErrback(lambda err: None) # Note: This does not completely comply with the Stratum protocol, but it causes precision 
+        self.other.svc_mining.rpc_set_difficulty(bitcoin_data.target_to_difficulty(x['share_target'])).addErrback(lambda err: None)
         self.other.svc_mining.rpc_notify(
             jobid, # jobid
             pack.IntType(256).pack(x['previous_block']).encode('hex'), # prevhash
