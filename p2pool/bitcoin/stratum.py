@@ -50,9 +50,9 @@ class StratumRPCMiningProvider(object):
             x['coinb1'].encode('hex'), # coinb1
             x['coinb2'].encode('hex'), # coinb2
             [pack.IntType(256).pack(s).encode('hex') for s in x['merkle_link']['branch']], # merkle_branch
-            getwork._swap4(pack.IntType(32).pack(x['version']).encode('hex')), # version
-            getwork._swap4(pack.IntType(32).pack(x['bits'].bits).encode('hex')), # nbits
-            getwork._swap4(pack.IntType(32).pack(x['timestamp']).encode('hex')), # ntime
+            getwork._swap4(pack.IntType(32).pack(x['version'])).encode('hex'), # version
+            getwork._swap4(pack.IntType(32).pack(x['bits'].bits)).encode('hex'), # nbits
+            getwork._swap4(pack.IntType(32).pack(x['timestamp'])).encode('hex'), # ntime
             True, # clean_jobs
         ).addErrback(lambda err: None)
         self.handler_map[jobid] = x, got_response
