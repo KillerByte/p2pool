@@ -46,7 +46,7 @@ class StratumRPCMiningProvider(object):
         self.other.svc_mining.rpc_set_difficulty(bitcoin_data.target_to_difficulty(x['share_target'])).addErrback(lambda err: None)
         self.other.svc_mining.rpc_notify(
             jobid, # jobid
-            getwork._swap4(pack.IntType(256).pack(x['previous_block']).encode('hex')), # prevhash
+            getwork._swap4(pack.IntType(256).pack(x['previous_block'])).encode('hex'), # prevhash
             x['coinb1'].encode('hex'), # coinb1
             x['coinb2'].encode('hex'), # coinb2
             [pack.IntType(256).pack(s).encode('hex') for s in x['merkle_link']['branch']], # merkle_branch
