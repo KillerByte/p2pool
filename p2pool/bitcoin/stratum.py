@@ -46,13 +46,13 @@ class StratumRPCMiningProvider(object):
         self.other.svc_mining.rpc_set_difficulty(bitcoin_data.target_to_difficulty(x['share_target'])).addErrback(lambda err: None)
         self.other.svc_mining.rpc_notify(
             jobid, # jobid
-            getwork._swap4(pack.IntType(256).pack(x['previous_block'])).encode('hex'), # prevhash
+            pack.IntType(256).pack(x['previous_block']).encode('hex'), # prevhash
             x['coinb1'].encode('hex'), # coinb1
             x['coinb2'].encode('hex'), # coinb2
             [pack.IntType(256).pack(s).encode('hex') for s in x['merkle_link']['branch']], # merkle_branch
-            getwork._swap4(pack.IntType(32).pack(x['version'])).encode('hex'), # version
-            getwork._swap4(pack.IntType(32).pack(x['bits'].bits)).encode('hex'), # nbits
-            getwork._swap4(pack.IntType(32).pack(x['timestamp'])).encode('hex'), # ntime
+            pack.IntType(32).pack(x['version']).encode('hex'), # version
+            pack.IntType(32).pack(x['bits'].bits).encode('hex'), # nbits
+            pack.IntType(32).pack(x['timestamp']).encode('hex'), # ntime
             True, # clean_jobs
         ).addErrback(lambda err: None)
         self.handler_map[jobid] = x, got_response
@@ -69,11 +69,11 @@ class StratumRPCMiningProvider(object):
             version=x['version'],
             previous_block=x['previous_block'],
             merkle_root=bitcoin_data.check_merkle_link(bitcoin_data.hash256(new_packed_gentx), x['merkle_link']),
-            timestamp=pack.IntType(32).unpack(getwork._swap4(ntime.decode('hex'))),
+            timestamp=pack.IntType(32).unpack(ntime.decode('hex')),
             bits=x['bits'],
-            nonce=pack.IntType(32).unpack(getwork._swap4(nonce.decode('hex'))),
-            birthdayA=pack.IntType(32).unpack(getwork._swap4(birthdayA.decode('hex'))),
-            birthdayB=pack.IntType(32).unpack(getwork._swap4(birthdayB.decode('hex'))),
+            nonce=pack.IntType(32).unpack(nonce.decode('hex')),
+            birthdayA=pack.IntType(32).unpack(birthdayA.decode('hex')),
+            birthdayB=pack.IntType(32).unpack(birthdayB.decode('hex')),
         )
         return got_response(header, worker_name, coinb_nonce)
     
