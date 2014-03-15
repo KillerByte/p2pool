@@ -7,7 +7,6 @@ from twisted.python import log
 from p2pool.bitcoin import data as bitcoin_data, getwork
 from p2pool.util import expiring_dict, jsonrpc, pack
 
-
 class StratumRPCMiningProvider(object):
     def __init__(self, wb, other, transport):
         self.wb = wb
@@ -58,13 +57,19 @@ class StratumRPCMiningProvider(object):
         self.handler_map[jobid] = x, got_response
     
     def rpc_submit(self, worker_name, job_id, extranonce2, ntime, nonce, birthdayA, birthdayB):
+        print 'Submit recieved'
         if job_id not in self.handler_map:
             print >>sys.stderr, '''Couldn't link returned work's job id with its handler. This should only happen if this process was recently restarted!'''
             return False
         x, got_response = self.handler_map[job_id]
         coinb_nonce = extranonce2.decode('hex')
+        print "COINBN: %i NL: %i" % (len(coinb_nonce), self.wb.COINBASE_NONCE_LENGTH)
         assert len(coinb_nonce) == self.wb.COINBASE_NONCE_LENGTH
         new_packed_gentx = x['coinb1'] + coinb_nonce + x['coinb2']
+        print new_packed_gentx.encode('hex');
+        print bitcoin_data.hash256(new_packed_gentx)
+        print birthdayA
+        print birthdayB
         header = dict(
             version=x['version'],
             previous_block=x['previous_block'],

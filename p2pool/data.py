@@ -49,7 +49,7 @@ def load_share(share, net, peer_addr):
     else:
         raise ValueError('unknown share type: %r' % (share['type'],))
 
-DONATION_SCRIPT = ''#.decode('hex') <- TODO: Generate a transaction script
+DONATION_SCRIPT = '4104ffd03de44a6e11b9917f3a29f9443283d9871c9d743ef30d5eddcd37094b64d1b3d8090496b53256786bf5c82932ec23c3b74d9f05a6f95a8b5529352656664bac'.decode('hex') # <- TODO: Generate a transaction script for memorycoin devs, not this other script, although this probobly goes to the 
 
 class Share(object):
     VERSION = 13

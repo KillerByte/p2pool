@@ -11,6 +11,11 @@ import signal
 import traceback
 import urlparse
 
+try:
+    import aes
+except ImportError:
+    sys.exit("Error: AES does not seem to be installed. Try 'sudo pip install slowaes'")
+
 if '--iocp' in sys.argv:
     from twisted.internet import iocpreactor
     iocpreactor.install()
@@ -24,6 +29,7 @@ from bitcoin import stratum, worker_interface, helper
 from util import fixargparse, jsonrpc, variable, deferral, math, logging, switchprotocol
 from . import networks, web, work
 import p2pool, p2pool.data as p2pool_data, p2pool.node as p2pool_node
+
 
 @defer.inlineCallbacks
 def main(args, net, datadir_path, merged_urls, worker_endpoint):

@@ -58,6 +58,7 @@ def _handle(data, provider, preargs=(), response_handler=None):
                 try:
                     req = json.loads(data)
                 except Exception:
+                    print "Invalid: " + data
                     raise Error_for_code(-32700)(u'Parse error')
                 
                 if 'result' in req or 'error' in req:
