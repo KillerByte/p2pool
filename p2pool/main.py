@@ -12,9 +12,9 @@ import traceback
 import urlparse
 
 try:
-    import aes
+    import memorycoin_momentum
 except ImportError:
-    sys.exit("Error: AES does not seem to be installed. Try 'sudo pip install slowaes'")
+    sys.exit("Error: Memorycoin Momentum checking is not installed. Simply enter the memorycoin_momentum directory and try 'sudo python setup.py build'")
 
 if '--iocp' in sys.argv:
     from twisted.internet import iocpreactor

@@ -6,7 +6,9 @@ import re
 import sys
 import time
 
-import aes
+import hashlib
+
+import memorycoin_momentum
 
 from twisted.internet import defer
 from twisted.python import log
@@ -356,6 +358,9 @@ class WorkerBridge(worker_interface.WorkerBridge):
             assert header['previous_block'] == ba['previous_block']
             assert header['merkle_root'] == bitcoin_data.check_merkle_link(bitcoin_data.hash256(new_packed_gentx), merkle_link)
             assert header['bits'] == ba['bits']
+            
+            if not memorycoin_momentum.checkMomentum(hashlib.sha256(bitcoin_data.block_header_type.pack(header)).digest(), header['birthdayA'], header['birthdayB']):
+                return False
             
             on_time = self.new_work_event.times == lp_count
             
