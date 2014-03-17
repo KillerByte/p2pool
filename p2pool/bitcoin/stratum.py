@@ -48,7 +48,7 @@ class StratumRPCMiningProvider(object):
             pack.IntType(256).pack(x['previous_block']).encode('hex'), # prevhash
             x['coinb1'].encode('hex'), # coinb1
             x['coinb2'].encode('hex'), # coinb2
-            [pack.IntType(256).pack(s)[::-1].encode('hex') for s in x['merkle_link']['branch']], # merkle_branch
+            [pack.IntType(256).pack(s).encode('hex') for s in x['merkle_link']['branch']], # merkle_branch
             pack.IntType(32).pack(x['version']).encode('hex'), # version
             pack.IntType(32).pack(x['bits'].bits).encode('hex'), # nbits
             pack.IntType(32).pack(x['timestamp']).encode('hex'), # ntime
