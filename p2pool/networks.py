@@ -21,7 +21,7 @@ nets = dict(
         MIN_TARGET=0,
         MAX_TARGET=2**256//2 - 1, # 1/2 of generated hashes
         PERSIST=False,
-        WORKER_PORT=9332,
+        WORKER_PORT=8080,
         BOOTSTRAP_ADDRS='memorycoin.biz'.split(' '),
         ANNOUNCE_CHANNEL='#p2pool',
         VERSION_CHECK=lambda v: 50700 <= v < 60000 or 60010 <= v < 60100 or 60400 <= v,
