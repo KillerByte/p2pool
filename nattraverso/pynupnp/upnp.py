@@ -517,7 +517,9 @@ class UPnPProtocol(DatagramProtocol, object):
             return
         self._done = True
         self.mcast.stopListening()
-        self._discovery.errback(failure.Failure(defer.TimeoutError('in _on_discovery_timeout')))
+        # This will crash P2Pool - BAD
+        #self._discovery.errback(failure.Failure(defer.TimeoutError('in _on_discovery_timeout')))
+        print "Timeout Error in _on_discovery_timeout"
 
 def search_upnp_device ():
     """
