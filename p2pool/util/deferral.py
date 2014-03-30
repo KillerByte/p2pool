@@ -71,7 +71,9 @@ class ReplyMatcher(object):
             self.map[id].remove((df, timer))
             if not self.map[id]:
                 del self.map[id]
-            df.errback(failure.Failure(defer.TimeoutError('in ReplyMatcher')))
+            #df.errback(failure.Failure(defer.TimeoutError('in ReplyMatcher')))
+            # For now, print a little error message since I know not how to solve this error
+            print 'Timeout in ReplyMatcher!'
         timer = reactor.callLater(self.timeout, timeout)
         self.map.setdefault(id, set()).add((df, timer))
         return df
@@ -109,7 +111,8 @@ class GenericDeferrer(object):
             df = defer.Deferred() # handle older versions of Twisted
         def timeout():
             self.map.pop(id)
-            df.errback(failure.Failure(defer.TimeoutError('in GenericDeferrer')))
+            #df.errback(failure.Failure(defer.TimeoutError('in GenericDeferrer')))
+            print 'Timeout in GenericDeferrer'
             self.on_timeout()
         timer = reactor.callLater(self.timeout, timeout)
         self.map[id] = df, timer
