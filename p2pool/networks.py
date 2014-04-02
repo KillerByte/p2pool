@@ -22,7 +22,7 @@ nets = dict(
         MAX_TARGET=2**256//2 - 1, # 1/2 of generated hashes
         PERSIST=False,
         WORKER_PORT=8080,
-        BOOTSTRAP_ADDRS='memorycoin.biz'.split(' '),
+        BOOTSTRAP_ADDRS='mmcexplorer.info'.split(' '),
         ANNOUNCE_CHANNEL='#p2pool',
         VERSION_CHECK=lambda v: 50700 <= v < 60000 or 60010 <= v < 60100 or 60400 <= v,
         VERSION_WARNING=lambda v: 'Upgrade Memorycoin to >=0.8.5!' if v < 80500 else None,
