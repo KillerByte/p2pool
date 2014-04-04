@@ -14,7 +14,7 @@ from twisted.internet import defer
 from twisted.python import log
 
 import bitcoin.getwork as bitcoin_getwork, bitcoin.data as bitcoin_data
-from bitcoin import helper, script, worker_interface
+from bitcoin import helper, script, sha256, worker_interface
 from util import forest, jsonrpc, variable, deferral, math, pack
 import p2pool, p2pool.data as p2pool_data
 
@@ -358,8 +358,10 @@ class WorkerBridge(worker_interface.WorkerBridge):
             assert header['previous_block'] == ba['previous_block']
             assert header['merkle_root'] == bitcoin_data.check_merkle_link(bitcoin_data.hash256(new_packed_gentx), merkle_link)
             assert header['bits'] == ba['bits']
-            
-            if not memorycoin_momentum.checkMomentum(hashlib.sha256(bitcoin_data.block_header_type.pack(header)).digest(), header['birthdayA'], header['birthdayB']):
+            # Check momentum using midstate (may be slow) and birthday values
+            momentumc = memorycoin_momentum.checkMomentum(sha256.process(sha256.initial_state, bitcoin_data.block_header_type.pack(header)[:64]), header['birthdayA'], header['birthdayB'])
+            print momentumc
+            if momentumc == False:
                 return False
             
             on_time = self.new_work_event.times == lp_count
