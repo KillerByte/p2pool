@@ -358,8 +358,12 @@ class WorkerBridge(worker_interface.WorkerBridge):
             assert header['previous_block'] == ba['previous_block']
             assert header['merkle_root'] == bitcoin_data.check_merkle_link(bitcoin_data.hash256(new_packed_gentx), merkle_link)
             assert header['bits'] == ba['bits']
-            # Check momentum using midstate (may be slow) and birthday values
-            momentumc = memorycoin_momentum.checkMomentum(sha256.process(sha256.initial_state, bitcoin_data.block_header_type.pack(header)[:64]), header['birthdayA'], header['birthdayB'])
+            # Check momentum using midhash (who knows why it is called that) and birthday values
+            midhash = hashlib.sha256(hashlib.sha256(bitcoin_data.block_header_type.pack(header)[:80]).digest()).digest()[::-1]
+            print midhash.encode('hex')
+            print header['birthdayA']
+            print header['birthdayB']
+            momentumc = memorycoin_momentum.checkMomentum(bytearray(midhash), header['birthdayA'], header['birthdayB'])
             print momentumc
             if momentumc == False:
                 return False
