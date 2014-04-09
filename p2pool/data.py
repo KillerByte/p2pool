@@ -117,12 +117,19 @@ class Share(object):
         assert height >= net.REAL_CHAIN_LENGTH or last is None
         if height < net.TARGET_LOOKBEHIND:
             pre_target3 = net.MAX_TARGET
+            print 'Set max target'
         else:
-            attempts_per_second = get_pool_attempts_per_second(tracker, share_data['previous_share_hash'], net.TARGET_LOOKBEHIND, min_work=True, integer=True)
+            print 'Set target'
+            attempts_per_second = get_pool_attempts_per_second(tracker, share_data['previous_share_hash'], net.TARGET_LOOKBEHIND, min_work=True, integer=False) # Integer will cause problems if hash rate is too low
+            print attempts_per_second
             pre_target = 2**256//(net.SHARE_PERIOD*attempts_per_second) - 1 if attempts_per_second else 2**256-1
+            print pre_target
             pre_target2 = math.clip(pre_target, (previous_share.max_target*9//10, previous_share.max_target*11//10))
+            print pre_target2
             pre_target3 = math.clip(pre_target2, (net.MIN_TARGET, net.MAX_TARGET))
+            print pre_target3
         max_bits = bitcoin_data.FloatingInteger.from_target_upper_bound(pre_target3)
+        print max_bits
         bits = bitcoin_data.FloatingInteger.from_target_upper_bound(math.clip(desired_target, (pre_target3//30, pre_target3)))
         
         new_transaction_hashes = []
