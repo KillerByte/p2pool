@@ -1,3 +1,5 @@
+#include <Python.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include "momentum.h"
@@ -17,82 +19,6 @@ const unsigned int chunks=(1<<(PSUEDORANDOM_DATA_SIZE-PSUEDORANDOM_DATA_CHUNK_SI
 const unsigned int chunkSize=(1<<(PSUEDORANDOM_DATA_CHUNK_SIZE));
 const unsigned int comparisonSize=(1<<(PSUEDORANDOM_DATA_SIZE-L2CACHE_TARGET));
 
-/*bool momentum_verify(const char *midHash, unsigned int a, unsigned int b ){
-	
-	//Basic check
-	if( a > comparisonSize ) return false;
-	
-	//Allocate memory required
-	unsigned char *cacheMemoryOperatingData;
-	unsigned char *cacheMemoryOperatingData2;
-	cacheMemoryOperatingData = (unsigned char *)malloc(cacheMemorySize+16);
-	cacheMemoryOperatingData2 = (unsigned char *)malloc(cacheMemorySize);
-	unsigned int* cacheMemoryOperatingData32 = (unsigned int*)cacheMemoryOperatingData;
-	unsigned int* cacheMemoryOperatingData322 = (unsigned int*)cacheMemoryOperatingData2;
-	
-	unsigned char  hash_tmp[32];
-	memcpy((char*)&hash_tmp[0], (char*)&midHash, 32);
-	unsigned int* index = (unsigned int*)hash_tmp;
-	
-	unsigned int startLocation = a * cacheMemorySize / chunkSize;
-	unsigned int finishLocation = startLocation + (cacheMemorySize / chunkSize);
-		
-	//copy 64k of data to first l2 cache
-	unsigned int i;
-	for(i = startLocation;i < finishLocation;i++) {
-		*index = i;
-		SHA512((unsigned char*)hash_tmp, 32, (unsigned char*)&(cacheMemoryOperatingData[(i-startLocation)*chunkSize]));
-	}
-	
-	unsigned char key[32] = {0};
-	unsigned char iv[AES_BLOCK_SIZE];
-	int outlen1, outlen2;
-	
-	int j;
-	for(j=0;j<AES_ITERATIONS;j++){
-		
-		//use last 4 bits as next location
-		startLocation = (cacheMemoryOperatingData32[(cacheMemorySize / 4) - 1] % comparisonSize) * cacheMemorySize / chunkSize;
-		finishLocation = startLocation + (cacheMemorySize / chunkSize);
-		unsigned int i;
-		for(i = startLocation;i < finishLocation;i++) {
-			*index = i;
-			SHA512((unsigned char*)hash_tmp, 32, (unsigned char*)&(cacheMemoryOperatingData2[(i-startLocation)*chunkSize]));
-		}
-
-		//XOR location data into second cache
-		for(i = 0;i < cacheMemorySize / 4;i++){
-			cacheMemoryOperatingData322[i] = cacheMemoryOperatingData32[i] ^ cacheMemoryOperatingData322[i];
-		}
-		
-		//AES Encrypt using last 256bits as key
-		
-		EVP_CIPHER_CTX ctx;
-		memcpy(key,(unsigned char*)&cacheMemoryOperatingData2[cacheMemorySize-32],32);
-		memcpy(iv,(unsigned char*)&cacheMemoryOperatingData2[cacheMemorySize-AES_BLOCK_SIZE],AES_BLOCK_SIZE);
-		EVP_EncryptInit(&ctx, EVP_aes_256_cbc(), key, iv);
-		EVP_EncryptUpdate(&ctx, cacheMemoryOperatingData, &outlen1, cacheMemoryOperatingData2, cacheMemorySize);
-		EVP_EncryptFinal(&ctx, cacheMemoryOperatingData + outlen1, &outlen2);
-		EVP_CIPHER_CTX_cleanup(&ctx);
-		
-	}
-	//use last X bits as solution
-	unsigned int solution = cacheMemoryOperatingData32[(cacheMemorySize/4)-1]%comparisonSize;
-	unsigned int proofOfCalculation = cacheMemoryOperatingData32[(cacheMemorySize/4)-2];
-	
-	//free memory
-	free(cacheMemoryOperatingData);
-	free(cacheMemoryOperatingData2);
-	
-	if(solution == 1968 && proofOfCalculation == b){
-		return true;
-	}
-	
-	return false;
-}*/
-
-typedef unsigned int uint32_t;
-
 bool momentum_verify(unsigned char *midHash, uint32_t a, uint32_t b ){
 	//return false;
 	
@@ -107,8 +33,10 @@ bool momentum_verify(unsigned char *midHash, uint32_t a, uint32_t b ){
 	uint32_t* cacheMemoryOperatingData32 = (uint32_t*)cacheMemoryOperatingData;
 	uint32_t* cacheMemoryOperatingData322 = (uint32_t*)cacheMemoryOperatingData2;
 	
-	unsigned char  hash_tmp[32];
-	memcpy((char*)&hash_tmp[0], (char*)&midHash, 32 );
+	unsigned char *hash_tmp = midHash;
+	
+	//unsigned char  hash_tmp[32];
+	//memcpy((char*)&hash_tmp[0], midHash, 32 );
 	uint32_t* index = (uint32_t*)hash_tmp;
 	
 	//AES_KEY AESkey;
@@ -121,17 +49,17 @@ bool momentum_verify(unsigned char *midHash, uint32_t a, uint32_t b ){
 	uint32_t h;
 	for(h = startLocation; h <  finishLocation;  h++){
 		*index = h;
-		SHA512((unsigned char*)hash_tmp, sizeof(hash_tmp), (unsigned char*)&(cacheMemoryOperatingData[(h-startLocation)*chunkSize]));
+		SHA512((unsigned char*)hash_tmp, 32, (unsigned char*)&(cacheMemoryOperatingData[(h-startLocation)*chunkSize]));
 	}
 	
 	unsigned int useEVP = 1;
 
 	//allow override for AESNI testing
-	if(*midHash==0){
-		useEVP=0;
-	}else if(*midHash==1){
-		useEVP=1;
-	}
+	//if(*midHash==0){
+	//	useEVP=0;
+	//}else if(*midHash==1){
+	//	useEVP=1;
+	//}
 
 	unsigned char key[32] = {0};
 	unsigned char iv[AES_BLOCK_SIZE];
@@ -147,7 +75,7 @@ bool momentum_verify(unsigned char *midHash, uint32_t a, uint32_t b ){
 		uint32_t i;
 		for(i = startLocation; i <  finishLocation;  i++){
 			*index = i;
-			SHA512((unsigned char*)hash_tmp, sizeof(hash_tmp), (unsigned char*)&(cacheMemoryOperatingData2[(i-startLocation)*chunkSize]));
+			SHA512(hash_tmp, 32, (unsigned char*)&(cacheMemoryOperatingData2[(i-startLocation)*chunkSize]));
 		}
 
 		//XOR location data into second cache
@@ -182,8 +110,8 @@ bool momentum_verify(unsigned char *midHash, uint32_t a, uint32_t b ){
 	//free memory
 	free(cacheMemoryOperatingData);
 	free(cacheMemoryOperatingData2);		
-	//CRYPTO_cleanup_all_ex_data();
-	//EVP_cleanup();
+	CRYPTO_cleanup_all_ex_data();
+	EVP_cleanup();
 	
 	if(solution==1968 && proofOfCalculation==b){
 		return true;

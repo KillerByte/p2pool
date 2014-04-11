@@ -37,14 +37,16 @@ unsigned char *ParseHex(const char* psz, int len)
         if (c == (signed char)-1)
             break;
         n |= c;
-        vch[i] = n;
+        vch[31 - i] = n;
     }
     return vch;
 }
 
+
+
 static PyObject *momentum_check(PyObject *self, PyObject *args)
 {
-	char *midhash;
+	/*char *midhash;
 	
 	
 	//int size;
@@ -53,17 +55,42 @@ static PyObject *momentum_check(PyObject *self, PyObject *args)
 	if(!PyArg_ParseTuple(args, "s#II", &midhash, &size, &a, &b))
 		return NULL;
 	
-	
-	
 	if(size != 64)
 		return NULL;
 	
 	unsigned char * data = ParseHex(midhash, 32);
 	
-	if(momentum_verify(data, a, b))
+	bool result = momentum_verify(data, a, b)
+	
+	free(data);
+	
+	if(result)
 		return Py_True;
 	else
+		return Py_False;*/
+	
+	unsigned int a, b;
+    PyStringObject *input;
+    if (!PyArg_ParseTuple(args, "SII", &input, &a, &b))
+        return NULL;
+    //Py_INCREF(input);
+	
+	if(PyString_Size((PyObject*)input) != 32) {
+		//Py_DECREF(input);
+		return NULL;
+	}
+	
+    bool result = momentum_verify(PyString_AsString((PyObject*)input), a, b);
+    
+    //Py_DECREF(input);
+    if(result) {
+		Py_INCREF(Py_True);
+		return Py_True;
+	}
+    else {
+		Py_INCREF(Py_False);
 		return Py_False;
+	}
 }
 
 static PyMethodDef MomentumMethods[] = {

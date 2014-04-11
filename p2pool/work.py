@@ -359,13 +359,14 @@ class WorkerBridge(worker_interface.WorkerBridge):
             assert header['merkle_root'] == bitcoin_data.check_merkle_link(bitcoin_data.hash256(new_packed_gentx), merkle_link)
             assert header['bits'] == ba['bits']
             # Check momentum using midhash (who knows why it is called that) and birthday values
-            midhash = hashlib.sha256(hashlib.sha256(bitcoin_data.block_header_type.pack(header)[:80]).digest()).digest()[::-1]
-            print midhash.encode('hex')
-            print header['birthdayA']
-            print header['birthdayB']
-            momentumc = memorycoin_momentum.checkMomentum(bytearray(midhash), header['birthdayA'], header['birthdayB'])
-            print momentumc
+            midhash = hashlib.sha256(hashlib.sha256(bitcoin_data.block_header_type.pack(header)[:80]).digest()).digest()
+            #print 'MIDHASH: {0}'.format(midhash.encode('hex'))
+            #print 'A: {0}'.format(header['birthdayA'])
+            #print 'B: {0}'.format(header['birthdayB'])
+            momentumc = memorycoin_momentum.checkMomentum(midhash, header['birthdayA'], header['birthdayB'])
+            #print momentumc
             if momentumc == False:
+                print 'Invalid Momentum from Client!'
                 return False
             
             on_time = self.new_work_event.times == lp_count

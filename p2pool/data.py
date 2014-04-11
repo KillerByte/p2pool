@@ -8,6 +8,8 @@ import time
 
 from twisted.python import log
 
+import memorycoin_momentum
+
 import p2pool
 from p2pool.bitcoin import data as bitcoin_data, script, sha256
 from p2pool.util import math, forest, pack
@@ -280,6 +282,12 @@ class Share(object):
         self.pow_hash = net.PARENT.POW_FUNC(bitcoin_data.block_header_type.pack(self.header))
         self.hash = self.header_hash = bitcoin_data.hash256(bitcoin_data.block_header_type.pack(self.header))
         
+        midhash = hashlib.sha256(hashlib.sha256(bitcoin_data.block_header_type.pack(self.header)[:80]).digest()).digest()
+		
+        #print 'MIDHASH: {0}'.format(midhash.encode('hex'))
+        #print 'A: {0}'.format(self.header['birthdayA'])
+        #print 'B: {0}'.format(self.header['birthdayB'])
+        
         if self.target > net.MAX_TARGET:
             from p2pool import p2p
             raise p2p.PeerMisbehavingError('share target invalid')
@@ -287,6 +295,9 @@ class Share(object):
         if self.pow_hash > self.target:
             from p2pool import p2p
             raise p2p.PeerMisbehavingError('share PoW invalid')
+        if memorycoin_momentum.checkMomentum(midhash, self.header['birthdayA'], self.header['birthdayB']) == False:
+            from p2pool import p2p
+            raise p2p.PeerMisbehavingError('share momentum invalid')
         
         self.new_transaction_hashes = self.share_info['new_transaction_hashes']
         
