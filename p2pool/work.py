@@ -192,13 +192,15 @@ class WorkerBridge(worker_interface.WorkerBridge):
         miner_dead_hash_rates = {}
         datums, dt = self.local_rate_monitor.get_datums_in_last()
         for datum in datums:
-            miner_hash_rates[datum['user']] = miner_hash_rates.get(datum['user'], 0) + datum['work']/dt
             if minute:
-                miner_hash_rates[datum['user']] = (miner_hash_rates.get(datum['user'], 0) + datum['work']/dt) * 60
+                miner_hash_rates[datum['user']] = miner_hash_rates.get(datum['user'], 0) + ((datum['work']/dt) * 60)
+            else:
+				miner_hash_rates[datum['user']] = miner_hash_rates.get(datum['user'], 0) + datum['work']/dt
             if datum['dead']:
-                miner_dead_hash_rates[datum['user']] = miner_dead_hash_rates.get(datum['user'], 0) + datum['work']/dt
                 if minute:
-                   miner_dead_hash_rates[datum['user']] = (miner_dead_hash_rates.get(datum['user'], 0) + datum['work']/dt) * 60
+                    miner_dead_hash_rates[datum['user']] = miner_dead_hash_rates.get(datum['user'], 0) + ((datum['work']/dt) * 60)
+                else:
+					miner_dead_hash_rates[datum['user']] = miner_dead_hash_rates.get(datum['user'], 0) + datum['work']/dt
         return miner_hash_rates, miner_dead_hash_rates
     
     def get_local_addr_rates(self):
