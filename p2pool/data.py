@@ -47,7 +47,7 @@ def load_share(share, net, peer_addr):
         from p2pool import p2p
         raise p2p.PeerMisbehavingError('sent an obsolete share')
     elif share['type'] == Share.VERSION:
-        return Share(net, peer_addr, Share.share_type.unpack(share['contents']))
+        return Share(net, peer_addr, Share.share_type.unpack(share['contents']), True)
     else:
         raise ValueError('unknown share type: %r' % (share['type'],))
 
@@ -237,7 +237,7 @@ class Share(object):
     
     __slots__ = 'net peer_addr contents min_header share_info hash_link merkle_link hash share_data max_target target timestamp previous_hash new_script desired_version gentx_hash header pow_hash header_hash new_transaction_hashes time_seen absheight abswork'.split(' ')
     
-    def __init__(self, net, peer_addr, contents):
+    def __init__(self, net, peer_addr, contents, skip_momentum=False):
         self.net = net
         self.peer_addr = peer_addr
         self.contents = contents
@@ -295,9 +295,10 @@ class Share(object):
         if self.pow_hash > self.target:
             from p2pool import p2p
             raise p2p.PeerMisbehavingError('share PoW invalid')
-        if memorycoin_momentum.checkMomentum(midhash, self.header['birthdayA'], self.header['birthdayB']) == False:
-            from p2pool import p2p
-            raise p2p.PeerMisbehavingError('share momentum invalid')
+        if not skip_momentum:
+            if memorycoin_momentum.checkMomentum(midhash, self.header['birthdayA'], self.header['birthdayB']) == False:
+                from p2pool import p2p
+                raise p2p.PeerMisbehavingError('share momentum invalid')
         
         self.new_transaction_hashes = self.share_info['new_transaction_hashes']
         

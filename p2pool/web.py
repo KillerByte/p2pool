@@ -97,7 +97,7 @@ def get_web_root(wb, datadir_path, bitcoind_getinfo_var, stop_event=variable.Eve
             return None
         lookbehind = min(node.tracker.get_height(node.best_share_var.value), 3600//node.net.SHARE_PERIOD)
         
-        nonstale_hash_rate = p2pool_data.get_pool_attempts_per_second(node.tracker, node.best_share_var.value, lookbehind)
+        nonstale_hash_rate = p2pool_data.get_pool_attempts_per_second(node.tracker, node.best_share_var.value, lookbehind) * 60
         stale_prop = p2pool_data.get_average_stale_prop(node.tracker, node.best_share_var.value, lookbehind)
         return dict(
             pool_nonstale_hash_rate=nonstale_hash_rate,
@@ -128,7 +128,7 @@ def get_web_root(wb, datadir_path, bitcoind_getinfo_var, stop_event=variable.Eve
             node.tracker.items[node.tracker.get_nth_parent_hash(node.best_share_var.value, lookbehind - 1)].timestamp)
         share_att_s = my_work / actual_time
         
-        miner_hash_rates, miner_dead_hash_rates = wb.get_local_rates()
+        miner_hash_rates, miner_dead_hash_rates = wb.get_local_rates(True)
         (stale_orphan_shares, stale_doa_shares), shares, _ = wb.get_stale_counts()
         
         return dict(
@@ -244,11 +244,10 @@ def get_web_root(wb, datadir_path, bitcoind_getinfo_var, stop_event=variable.Eve
         
         global_stale_prop = p2pool_data.get_average_stale_prop(node.tracker, node.best_share_var.value, lookbehind)
         (stale_orphan_shares, stale_doa_shares), shares, _ = wb.get_stale_counts()
-        miner_hash_rates, miner_dead_hash_rates = wb.get_local_rates()
-        
+        miner_hash_rates, miner_dead_hash_rates = wb.get_local_rates(True)
         stat_log.append(dict(
             time=time.time(),
-            pool_hash_rate=p2pool_data.get_pool_attempts_per_second(node.tracker, node.best_share_var.value, lookbehind)/(1-global_stale_prop),
+            pool_hash_rate=p2pool_data.get_pool_attempts_per_second(node.tracker, node.best_share_var.value, lookbehind)/(1-global_stale_prop) * 60,
             pool_stale_prop=global_stale_prop,
             local_hash_rates=miner_hash_rates,
             local_dead_hash_rates=miner_dead_hash_rates,
@@ -418,7 +417,7 @@ def get_web_root(wb, datadir_path, bitcoind_getinfo_var, stop_event=variable.Eve
         
         current_txouts = node.get_current_txouts()
         hd.datastreams['current_payout'].add_datum(t, current_txouts.get(bitcoin_data.pubkey_hash_to_script2(wb.my_pubkey_hash), 0)*1e-8)
-        miner_hash_rates, miner_dead_hash_rates = wb.get_local_rates()
+        miner_hash_rates, miner_dead_hash_rates = wb.get_local_rates(True)
         current_txouts_by_address = dict((bitcoin_data.script2_to_address(script, node.net.PARENT), amount) for script, amount in current_txouts.iteritems())
         hd.datastreams['current_payouts'].add_datum(t, dict((user, current_txouts_by_address[user]*1e-8) for user in miner_hash_rates if user in current_txouts_by_address))
         
