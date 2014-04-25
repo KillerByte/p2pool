@@ -311,7 +311,7 @@ class WorkerBridge(worker_interface.WorkerBridge):
             local_hash_rate = self._estimate_local_hash_rate()
             if local_hash_rate is not None:
                 target = min(target,
-                    bitcoin_data.average_attempts_to_target(local_hash_rate * 1)) # limit to 1 share response every second by modulating pseudoshare difficulty
+                    bitcoin_data.average_attempts_to_target(local_hash_rate * 3)) # limit to 1 share response every 3 seconds by modulating pseudoshare difficulty
         else:
             target = desired_pseudoshare_target
         target = max(target, share_info['bits'].target)
